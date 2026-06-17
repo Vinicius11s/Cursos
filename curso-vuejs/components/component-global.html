@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Componentes Globais</title>
+</head>
+
+<body>
+    <div id="components">
+        <div class="container">
+            <hr>
+            <list-component></list-component>
+            <list-component></list-component>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6"></script>
+    <script>
+        Vue.component('text-render', {
+            props: ['text'],
+            template: `
+                <div>
+                    <h4>{{ text }}</h4>
+                </div>
+            `
+        })
+
+        let listItemComponent = {
+            props: ['name'],
+            template: `
+                <li>{{ name }}</li>
+            `,
+        }
+
+        Vue.component('list-component', {
+            template: `
+                <ul>
+                    <list-item v-for="person in names" :name="person" :key="person"></list-item>
+                </ul>
+            `,
+            data: function () {
+                return {
+                    names: ['Vinicius', 'Rafael', 'Horta', 'Hcode']
+                }
+            },
+            components: {
+                listItem: listItemComponent
+            }
+        })
+
+        let app = new Vue({
+            el: "#components",
+            data: {
+
+            }
+        })
+    </script>
+
+</body>
+
+</html>

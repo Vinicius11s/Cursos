@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diretivas: v-for</title>
+</head>
+
+<body>
+    <div id="directives">
+        <h2>Cidades do Mundo</h2>
+        <ol>
+            <!-- <li v-for="city in cities"> {{ city }}</li> -> Array -->
+
+            <li v-for="item in cities">
+                {{ item.city }} - {{ item.country}}
+            </li>
+        </ol>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6"></script>
+    <script>
+
+        let app = new Vue({
+            el: "#directives",
+            data: {
+                // cities: ['Nova York', 'São Francisco', 'Los Angeles', 'Miami']
+                cities: [{
+                    city: 'Nova York',
+                    country: 'EUA'
+                }, {
+                    city: 'São Francisco',
+                    country: 'EUA'
+                }, {
+                    city: 'Los Angeles',
+                    country: 'EUA'
+                }, {
+                    city: 'Miami',
+                    country: 'EUA'
+                }]
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>

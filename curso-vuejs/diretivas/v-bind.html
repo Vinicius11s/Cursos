@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diretivas: v-for</title>
+</head>
+
+<body>
+    <div id="directives">
+        <h2>Acesse o site abaixo</h2>
+
+        <a :href="url">Site da Hcode</a>
+
+        <p :[arg]="value">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Porro est recusandae,
+            consectetur labore, odit cumque suscipit amet similique accusantium quibusdam
+            ipsum qui architecto sapiente error corporis voluptas praesentium sint facere.
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6"></script>
+    <script>
+
+        let app = new Vue({
+            el: "#directives",
+            data: {
+                url: 'https://hcode.com.br',
+                arg: 'title',
+                value: 'Parágrafo'
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>

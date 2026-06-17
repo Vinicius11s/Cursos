@@ -11,7 +11,9 @@
             <h1>{{ message }}</h1>
         </div>
 
-        <script src="vue.js"></script>
+        <!--<script src="vue.js"></script> Versão clássica via arquivo local-->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6"></script> Versão clássica via CDN -->
+
         <script>
             let app = new Vue({
                 el: '#start',
@@ -19,8 +21,6 @@
                     message: 'Hello World. Estou usando Vue!'
                 }
             })
-
         </script>
-
     </body>
 </html>
