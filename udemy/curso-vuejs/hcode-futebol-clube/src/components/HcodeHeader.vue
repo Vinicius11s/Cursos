@@ -1,7 +1,6 @@
 <!-- hcodeheader.vue -->
 
 <template>
-
     <header>
         <div class="container">
             <nav class="navbar navbar-expand">

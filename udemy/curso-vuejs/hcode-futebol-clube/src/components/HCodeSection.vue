@@ -1,13 +1,13 @@
 <template>
     <div>
-        <HcodeSectionBanner></HcodeSectionBanner>
-        <HcodeSectionNews></HcodeSectionNews>
+        <HcodeSectionBanner/>
+        <HcodeSectionNews/>
     </div>
 </template>
 
 <script>
 import HcodeSectionNews from './HcodeSectionNews.vue'
-import HcodeSectionBanner from './sHcodeSectionBanner.vue';
+import HcodeSectionBanner from './HcodeSectionBanner.vue';
 
 
 export default {

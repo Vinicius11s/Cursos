@@ -17,9 +17,9 @@ import HCodeSection from './components/HCodeSection.vue';
 export default {
   name: 'App',
   components: {
-    HcodeHeader : HcodeHeader,
-    HcodeFooter : HcodeFooter,
-    HCodeSection : HCodeSection,
+    HcodeHeader,
+    HCodeSection,
+    HcodeFooter
   }
 }
 </script>
