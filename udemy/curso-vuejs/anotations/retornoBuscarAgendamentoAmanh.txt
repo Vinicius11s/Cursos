@@ -1,0 +1,21 @@
+{
+    "status": 200,
+    "success": true,
+    "data": [
+        {
+            "agendamentoId": 74279179,
+            "nomePaciente": "GUILHERME BORTOLUZZI CABRERA",
+            "telefone": "M: (18)997522099 R: (18) 997522099 ",
+            "email": "GUIBCABRERA@HOTMAIL.COM",
+            "dataAgenda": "2026-07-17T10:10:00",
+            "linkConfirmacao": "https://portal.unimedprudente.com.br/Empresas/Confirmacao/5jje5BCIfYgrckVEP4ka57Lyk-cypenVIXreH3JvNWE"
+        },
+        {
+            "agendamentoId": 74279179,
+            "nomePaciente": "GUILHERME BORTOLUZZI CABRERA",
+            "telefone": "M: (18)997522099 R: (18) 997522099 ",
+            "email": "GUIBCABRERA@HOTMAIL.COM",
+            "dataAgenda": "2026-07-17T10:10:00",
+            "linkConfirmacao": "https://portal.unimedprudente.com.br/Empresas/Confirmacao/5jje5BCIfYgrckVEP4ka57Lyk-cypenVIXreH3JvNWE"
+        },
+]}

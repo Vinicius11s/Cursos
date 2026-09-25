@@ -46,7 +46,7 @@ export default {
         return 'green'
       }
 
-      return 'red'
+      return 'red'  
     }    
   }
 }

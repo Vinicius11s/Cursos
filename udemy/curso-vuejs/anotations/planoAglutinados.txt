@@ -1,0 +1,191 @@
+Plano completo: Códigos Aglutinados do zero
+
+  ---
+  O modelo mental primeiro
+
+  Pense no Vue como um sistema de três camadas que você já conhece do .NET:
+
+  ┌────────────────────┬───────────────────────────────────────┐
+  │        .NET        │                  Vue                  │
+  ├────────────────────┼───────────────────────────────────────┤
+  │ Banco de dados     │ Vuex Store (estado global em memória) │
+  ├────────────────────┼───────────────────────────────────────┤
+  │ Service/Repository │ actions.js (chamadas HTTP)            │
+  ├────────────────────┼───────────────────────────────────────┤
+  │ ViewModel / DTO    │ state + getters                       │
+  ├────────────────────┼───────────────────────────────────────┤
+  │ Controller         │ View (orquestra)                      │
+  ├────────────────────┼───────────────────────────────────────┤
+  │ Componente de UI   │ Component (exibe dados)               │
+  └────────────────────┴───────────────────────────────────────┘
+
+  ---
+  Passo 1 — Store: o estado global
+
+  Arquivo: store/state.js
+
+  Primeiro você define onde os dados vão morar:
+
+  listaCodigosAglutinados: [],
+
+  Insight: O estado é a "memória" da aplicação. Sem ele, cada componente teria que buscar os dados sozinho e não haveria compartilhamento.
+
+  ---
+  Arquivo: store/mutations.js
+
+  Mutations são as únicas que podem alterar o estado. Pense como um setter controlado:
+
+  SET_CODIGOS_AGLUTINADOS(state, lista) {
+      state.listaCodigosAglutinados = lista;
+  }
+
+  Insight: Você nunca altera o state diretamente nos componentes. A mutation é o único caminho — isso garante rastreabilidade (equivalente ao private set do  
+  C#).
+
+  ---
+  Arquivo: store/getters.js
+
+  Getters são propriedades computadas do state — como uma property de leitura:
+
+  getListaCodigosAglutinados: (state) => state.listaCodigosAglutinados || [],
+
+  ---
+  Arquivo: store/actions.js
+
+  A action é onde você chama a API. Ela recebe os dados e chama a mutation para gravar:
+
+  async selecionarTodosCodigosAglutinados({ commit }) {
+      const response = await apiClient.get('CodigoAglutinado/ListarTodos');
+      commit('SET_CODIGOS_AGLUTINADOS', response.data);
+  }
+
+  Insight crítico: O fluxo é sempre: componente → dispatch(action) → apiClient → commit(mutation) → state atualiza → getter reativo atualiza o componente.    
+  Isso é o Vuex em uma frase.
+
+  ---
+  Passo 2 — Item da listagem (o menor componente)
+
+  Arquivo: components/CodigoAglutinado/CodigoAglutinadoListagemItem.vue
+
+  Você começa pelo menor — o componente de uma linha da tabela. Ele recebe um item via props e emite eventos para o pai:
+
+  props: {
+      item: { type: Object, required: true },
+      itemExpandido: { type: [Number, String], default: null },
+  },
+  emits: ['toggle-expansao'],
+
+  Insight: Props descem (pai → filho), eventos sobem (filho → pai). Isso é o contrato do componente. O filho não sabe quem é o pai — só recebe dados e avisa  
+  quando algo acontece.
+
+  A expansão (mostrar os vinculados) funciona assim:
+  - O pai controla qual item está expandido (itemExpandido)
+  - O filho pergunta: meu id === itemExpandido? → se sim, mostra os detalhes
+  - Quando o botão é clicado, o filho emite toggle-expansao com seu id
+  - O pai decide se abre ou fecha
+
+  computed: {
+      expandido() {
+          return this.itemExpandido === this.item.id;
+      }
+  }
+
+  Insight sobre a busca lazy: Os vinculados só são buscados quando o item é expandido pela primeira vez. Você usa um watch no computed expandido:
+
+  watch: {
+      async expandido(val) {
+          if (val && this.codigosVinculados.length === 0) {
+              await this.carregarVinculados();
+          }
+      }
+  }
+
+  ---
+  Passo 3 — Listagem (o componente pai da tabela)
+
+  Arquivo: components/CodigoAglutinado/CodigoAglutinadoListagem.vue
+
+  Aqui você monta a tabela, consome o getter e passa os dados para cada item:
+
+  computed: {
+      ...mapGetters(['getListaCodigosAglutinados']),
+  }
+
+  Insight: mapGetters conecta o store ao componente. A lista fica reativa — quando o state muda, o componente re-renderiza automaticamente.
+
+  O controle de qual item está expandido fica aqui, não no item:
+
+  data() {
+      return { itemExpandido: null }
+  },
+  methods: {
+      onToggleExpansao(id) {
+          this.itemExpandido = this.itemExpandido === id ? null : id;
+      }
+  }
+
+  Por que o pai controla? Porque você quer que abrir um item feche o anterior. Se cada item controlasse seu próprio estado, você não conseguiria isso.        
+
+  ---
+  Passo 4 — View (orquestra tudo)
+
+  Arquivo: views/CodigoAglutinadoView.vue
+
+  A view é simples — ela só monta o layout e dispara o carregamento dos dados:
+
+  async created() {
+      this.carregando = true;
+      try {
+          await this.$store.dispatch('selecionarTodosCodigosAglutinados');
+      } finally {
+          this.carregando = false;
+      }
+  }
+
+  Insight: created roda antes do componente ser montado no DOM — é o lugar certo para buscar dados iniciais (equivalente ao OnInitializedAsync do Blazor ou   
+  OnActionExecuting do MVC).
+
+  ---
+  Passo 5 — Rota
+
+  Arquivo: router/index.js
+
+  Registra o caminho URL que carrega a view:
+
+  {
+      path: 'codigo-aglutinado',
+      name: 'codigo-aglutinado',
+      component: () => import('../views/CodigoAglutinadoView.vue'),
+      meta: { requiresAuth: true }
+  }
+
+  Insight: O () => import(...) é lazy loading — a view só é carregada quando o usuário acessa essa rota, não na inicialização da app.
+
+  ---
+  Passo 6 — Sidebar
+
+  Arquivo: layouts/inc/AppSidebar.vue
+
+  Último passo — só adicionar o link no menu:
+
+  <app-nav-item icon="fas fa-layer-group" link="/codigo-aglutinado" :active="isActive('/codigo-aglutinado')">
+      Cód. Aglutinados
+  </app-nav-item>
+
+  ---
+  Resumo da ordem
+
+  state.js        → define onde os dados ficam
+  mutations.js    → define como os dados são alterados
+  getters.js      → define como os dados são lidos
+  actions.js      → define como os dados são buscados da API
+  ───────────────────────────────────────────────────
+  ListagemItem    → o menor componente (uma linha)
+  Listagem        → a tabela (pai dos items)
+  View            → o layout + dispara o carregamento
+  ───────────────────────────────────────────────────
+  router/index.js → registra a URL
+  AppSidebar.vue  → adiciona no menu
+
+  A regra de ouro: Sempre de baixo para cima. Componente menor → componente pai → view → rota → menu. E sempre store antes dos componentes, porque os
+  componentes dependem do store.

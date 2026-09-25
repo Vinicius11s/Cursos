@@ -1,0 +1,75 @@
+  <script>
+  export default {
+    data()     → estado local do componente (como campos de classe em C#)
+
+computed: {
+  (Propriedade Get): Você avisa ao Vue: "Olha esses dados e me devolve um resultado".
+  Ela é passiva, ela apenas calcula e entrega um valor.
+}
+
+watch: {
+  (Evento PropertyChanged): Você avisa ao Vue: "Fica olhando essa variável.
+  Se ela mudar, execute esse bloco de código". Ele é ativo, ele executa uma ação.
+} 
+    created()  → executado antes do DOM montar (buscar dados iniciais aqui)
+    mounted()  → DOM disponível
+    methods:   → funções
+  }
+  </script>
+
+
+  - v-model → two-way binding (campo ↔ data)
+  - :prop → bind unidirecional (:class, :value)
+  - @click → evento (@click, @change, @submit)
+
+  state.js      → os dados globais (como propriedades de um singleton)
+  mutations.js  → única forma de alterar o state (sempre síncronas)
+  actions.js    → lógica assíncrona + HTTP, chama mutations depois
+  getters.js    → computed sobre o state (como propriedades calculadas)
+
+  Fluxo obrigatório do projeto:
+  Componente → dispatch(action) → action faz HTTP → commit(mutation) → mutation altera state → 
+  getter expõe → componente re-renderiza
+
+  Nos componentes, você acessa via helpers:
+  computed: { ...mapGetters(['getListaPedidosMedicos']) }
+  methods:  { ...mapActions(['listarPedidosMedicos']) }
+
+  Regra do projeto: HTTP só nas actions, nunca direto no componente.
+
+  3. Vue Router
+
+  Roteamento client-side. Similar a controllers no ASP.NET, mas tudo no navegador. O projeto tem um guard de autenticação em  router/index.js que verifica o JWT no localStorage antes de cada navegação.
+
+  // Navegar via código:
+  this.$router.push('/pedido-medico-listagem');
+  this.$router.push({ path: '/pedido-medico-cadastro/' + id });
+
+  // Pegar parâmetro da rota:
+  this.$route.params.id
+
+  ---
+  4. Axios com Interceptor JWT
+
+  A instância em services/axios.js injeta automaticamente o Authorization: Bearer <token> em toda requisição. Você nunca    
+  precisa passar o token manualmente — funciona como um middleware de pipeline do ASP.NET Core.
+
+  ---
+  5. Comunicação entre componentes
+
+  ┌─────────────────────┬────────────────────────┐
+  │       Direção       │       Mecanismo        │
+  ├─────────────────────┼────────────────────────┤
+  │ Pai → Filho         │ props                  │
+  ├─────────────────────┼────────────────────────┤
+  │ Filho → Pai         │ $emit('evento', dados) │
+  ├─────────────────────┼────────────────────────┤
+  │ Qualquer → Qualquer │ Vuex (store global)    │
+  └─────────────────────┴────────────────────────┘
+
+  ---
+  6. Padrão de erro e feedback
+
+  Dois utilitários em src/shared/:
+  - tratarErro(error, 'mensagem padrão') → extrai a mensagem da resposta da API e exibe modal de erro
+  - MessageBox.success/error/confirm/toast* → todos os alertas passam por aqui (SweetAlert2)
